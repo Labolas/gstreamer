@@ -1437,6 +1437,9 @@ gst_interlace_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
     interlace->fields_since_timebase += n_output_fields;
     interlace->field_index ^= (n_output_fields & 1);
 
+    /* keep metadata from incoming buffer */
+    gst_buffer_copy_into (output_buffer, buffer, GST_BUFFER_COPY_METADATA, 0, -1);
+    
     ret = gst_interlace_push_buffer (interlace, output_buffer);
     if (ret != GST_FLOW_OK) {
       GST_DEBUG_OBJECT (interlace, "Failed to push buffer %p", output_buffer);
@@ -1444,6 +1447,9 @@ gst_interlace_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
     }
 
     if (output_buffer2) {
+      /* keep metadata from incoming buffer */
+      gst_buffer_copy_into (output_buffer2, buffer, GST_BUFFER_COPY_METADATA, 0, -1);
+      
       ret = gst_interlace_push_buffer (interlace, output_buffer2);
       if (ret != GST_FLOW_OK) {
         GST_DEBUG_OBJECT (interlace, "Failed to push buffer %p",
